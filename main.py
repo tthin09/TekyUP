@@ -46,12 +46,31 @@ def logout():
         print("User haven't logged in yet")
 
 def go_home_screen():
+    time.sleep(1)
     driver.get("https://teky.edu.vn/")
+    
+def go_login_page():
+    login_button = WebDriverWait(driver, 3).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "a.btn.btn-cmn.btn-login"))
+    )
+    login_button.click()
+    
+    # find if we have to click 'Sử dụng tài khoản khác'
+    try:
+        WebDriverWait(driver, 3).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".b-grid__title.choose_account__link"))
+        )
+        new_account_button = driver.find_element(By.XPATH, "//a[.//text()[contains(normalize-space(), 'Sử dụng tài khoản khác')]]")
+        new_account_button.click()
+        print("Found 'Choose other account' button")
+    except:
+        print("Didn't find 'Choose other account' button")
 
 # From home screen to Log in
 def login(username, password):
-    driver.find_element(By.CSS_SELECTOR, "a.btn.btn-cmn.btn-login").click()
-    username_element = driver.find_element(By.ID, "user_username")
+    username_element = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.ID, "user_username"))
+    )
     username_element.send_keys(username)
 
     password_element = driver.find_element(By.ID, "user_password")
@@ -62,8 +81,7 @@ def login(username, password):
 
 # Choose student
 def choose_student(student_name):
-    parent_button_path = f"//div[@class='groupItems b-student__item'][.//h3[normalize-space()='{student_name}']]/div/div/div/div[3]"
-    parent_button = driver.find_element(By.XPATH, parent_button_path)
+    parent_button = driver.find_element(By.XPATH, f"//div[@class='groupItems b-student__item'][.//h3[normalize-space()='{student_name}']]/div/div/div/div[3]")
     select_student_button = parent_button.find_element(By.TAG_NAME, "svg")
     select_student_button.click()
     continue_sign_in = driver.find_element(By.ID, "btn-submit-choose-student")
@@ -121,13 +139,25 @@ def main():
     for student_data in data:
         go_home_screen()
         logout()
+        go_login_page()
         login(student_data['username'], student_data['password'])
         choose_student(student_data['student_name'])
         choose_course(student_data['course'])
         choose_lesson(student_data['level'], student_data['lesson_num'])
         upload_project(student_data['image_name'])
 
-main()
+def test():
+    student_data = data[0]
+    go_home_screen()
+    go_login_page()
+    login(student_data['username'], student_data['password'])
+    choose_student(student_data['student_name'])
+    
+    go_home_screen()
+    logout()
+    go_login_page()
+
+test()
 
 time.sleep(200)
 
