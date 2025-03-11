@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import pandas as pd
 import time
 import os
 
@@ -37,6 +38,10 @@ def is_logged_in():
         return False
     except:
         return True
+    
+# check if student have already uploaded that project
+def uploaded_project():
+    pass
 
 def logout():
     try:
@@ -146,18 +151,7 @@ def main():
         choose_lesson(student_data['level'], student_data['lesson_num'])
         upload_project(student_data['image_name'])
 
-def test():
-    student_data = data[0]
-    go_home_screen()
-    go_login_page()
-    login(student_data['username'], student_data['password'])
-    choose_student(student_data['student_name'])
-    
-    go_home_screen()
-    logout()
-    go_login_page()
-
-test()
+main()
 
 time.sleep(200)
 
