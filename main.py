@@ -11,25 +11,8 @@ service = Service(executable_path="chromedriver.exe")
 driver = webdriver.Chrome(service=service)
 
 # userdata
-data_1 = {
-    "student_name": "Phạm Vy An",
-    "username": "84972235270",
-    "password": "Teky@123",
-    "course": "Bé làm Game",
-    "level": "7",
-    "lesson_num": "4",
-    "image_name": "test.png",
-}
-data_2 = {
-    "student_name": "Phan Quốc Hưng",
-    "username": "84937285555",
-    "password": "Teky@123",
-    "course": "Bé làm Game",
-    "level": "7",
-    "lesson_num": "4",
-    "image_name": "test.png",
-}
-data = [data_1, data_2]
+df = pd.read_excel("student.xlsx")
+data = df.to_dict(orient='records')
 
 def is_logged_in():
     # if there is a login button, then we haven't logged in yet
@@ -41,7 +24,11 @@ def is_logged_in():
     
 # check if student have already uploaded that project
 def uploaded_project():
-    pass
+    try:
+        image_uploaded_section = driver.find_element(By.XPATH, "//*[normalize-space()='Hình ảnh sản phẩm']")
+        return True
+    except:
+        return False
 
 def logout():
     try:
@@ -67,7 +54,7 @@ def go_login_page():
         )
         new_account_button = driver.find_element(By.XPATH, "//a[.//text()[contains(normalize-space(), 'Sử dụng tài khoản khác')]]")
         new_account_button.click()
-        print("Found 'Choose other account' button")
+        print("Clicked 'Choose other account' button")
     except:
         print("Didn't find 'Choose other account' button")
 
@@ -108,6 +95,11 @@ def choose_lesson(level, lesson_num):
     level_div.click()
 
 def upload_project(image_name):
+    if uploaded_project():
+        print("Project uploaded")
+        return
+    else:
+        print("Project isn't uploaded yet")
     # Go to project session
     upload_project_session = WebDriverWait(driver, 15).until( 
         EC.presence_of_element_located((By.XPATH, "//*[@id='sesison_projects_link_tab']"))
@@ -121,7 +113,7 @@ def upload_project(image_name):
     description_text = driver.find_element(By.XPATH, "/html/body/div[1]/div/div[3]/div[2]/div/div[1]/div[1]/div/div[2]/ul/div/p[2]").text
     print(f"Before: {description_text}")
     while len(description_text) <= 50: # description must have more than 50 char
-        description_text = description_text + "\n" + description_text
+        description_text = description_text + "\r" + description_text
     print(f"After: {description_text}")
 
     title_element = driver.find_element(By.XPATH, "//*[@id='js-countformtext']")
@@ -141,7 +133,7 @@ def upload_project(image_name):
     #upload_button.click()
     
 def main():
-    for student_data in data:
+    for student_data in data[::-1]:
         go_home_screen()
         logout()
         go_login_page()
