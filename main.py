@@ -11,7 +11,7 @@ service = Service(executable_path="chromedriver.exe")
 driver = webdriver.Chrome(service=service)
 
 # userdata
-df = pd.read_excel("student.xlsx")
+df = pd.read_excel("student.xlsx", sheet_name="student_info")
 data = df.to_dict(orient='records')
 
 def is_logged_in():
@@ -132,7 +132,8 @@ def upload_project(image_name):
     upload_button = driver.find_element(By.XPATH, "//*[@id='button_create_project_form']")
     #upload_button.click()
     
-def main():
+def main_upload():
+    print("\nBắt đầu đăng sản phẩm học sinh...")
     for student_data in data[::-1]:
         go_home_screen()
         logout()
@@ -142,9 +143,26 @@ def main():
         choose_course(student_data['course'])
         choose_lesson(student_data['level'], student_data['lesson_num'])
         upload_project(student_data['image_name'])
+        
+def tutorial():
+    print("Hãy đọc hướng dẫn trong file README.md")
+    have_filled_info = ''
+    while have_filled_info.lower() not in ['y', 'yes']:
+        have_filled_info = input("1. Bạn đã điền đầy đủ thông tin của học sinh trong file student.xlsx chưa? (Y/N): ")
+    have_uploaded_image = ''
+    while have_uploaded_image.lower() not in ['y', 'yes']:
+        have_uploaded_image = input("2. Bạn đã bỏ hình ảnh sản phẩm vào thư mục images chưa? (Y/N): ")
+    have_checked_image_name = ''
+    while have_checked_image_name.lower() not in ['y', 'yes']:
+        have_checked_image_name = input("3. Kiểm tra lại xem tên hình ảnh trong file student.xlsx đã giống với tên hình ảnh trong thư mục images chưa? (Y/N): ")
+    return True
+    
+def main():
+    tutorial()
+    main_upload()
 
-main()
+if __name__ == "__main__":
+    main()
 
 time.sleep(200)
-
 driver.quit()
