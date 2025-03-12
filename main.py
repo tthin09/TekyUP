@@ -7,6 +7,7 @@ import pandas as pd
 import time
 import os
 
+# Chromedriver setup
 service = Service(executable_path="chromedriver.exe")
 driver = webdriver.Chrome(service=service)
 
@@ -71,7 +72,7 @@ def login(username, password):
     login_button = driver.find_element(By.XPATH, """//*[@id="devise_sign_in_form"]/input[2]""")
     login_button.click()
 
-# Choose student
+# Choose student after login
 def choose_student(student_name):
     parent_button = driver.find_element(By.XPATH, f"//div[@class='groupItems b-student__item'][.//h3[normalize-space()='{student_name}']]/div/div/div/div[3]")
     select_student_button = parent_button.find_element(By.TAG_NAME, "svg")
@@ -79,14 +80,14 @@ def choose_student(student_name):
     continue_sign_in = driver.find_element(By.ID, "btn-submit-choose-student")
     continue_sign_in.click()
 
-# Choose course
+# Choose course, currently at home page
 def choose_course(course_name):
     course_button = WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.XPATH, f"//div[@class='c-content-myclass__detail' and @data-course='{course_name}']"))
     )
     course_button.click()
 
-# Choose lesson
+# Choose lesson, currently at course page
 def choose_lesson(level, lesson_num):
     lesson_num = int(lesson_num)
     level_div = WebDriverWait(driver, 15).until(
@@ -94,12 +95,12 @@ def choose_lesson(level, lesson_num):
     )
     level_div.click()
 
+# Fill project info and upload, currently at lesson page
 def upload_project(image_name):
     if uploaded_project():
         print("Project uploaded")
-        return
-    else:
-        print("Project isn't uploaded yet")
+        return "project_uploaded"
+    
     # Go to project session
     upload_project_session = WebDriverWait(driver, 15).until( 
         EC.presence_of_element_located((By.XPATH, "//*[@id='sesison_projects_link_tab']"))
@@ -130,11 +131,14 @@ def upload_project(image_name):
     
     # click upload
     upload_button = driver.find_element(By.XPATH, "//*[@id='button_create_project_form']")
-    #upload_button.click()
+    upload_button.click()
+    
+    return "done"
     
 def main_upload():
     print("\nBắt đầu đăng sản phẩm học sinh...")
     for student_data in data[::-1]:
+        print(f"Đăng sản phẩm cho học sinh {student_data['student_name']}, môn học {student_data['course']}, học phần {student_data['level']}, bài {student_data['lesson_num']}")
         go_home_screen()
         logout()
         go_login_page()
@@ -143,6 +147,7 @@ def main_upload():
         choose_course(student_data['course'])
         choose_lesson(student_data['level'], student_data['lesson_num'])
         upload_project(student_data['image_name'])
+    
         
 def tutorial():
     print("Hãy đọc hướng dẫn trong file README.md")
@@ -160,9 +165,8 @@ def tutorial():
 def main():
     tutorial()
     main_upload()
+    time.sleep(200)
+    driver.quit()
 
 if __name__ == "__main__":
     main()
-
-time.sleep(200)
-driver.quit()
