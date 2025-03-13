@@ -14,6 +14,8 @@ Bước 5: Công cụ sẽ mở lên một màn hình để hỏi thầy cô m�
 
 Như vậy là đã xong! Giờ thầy cô có thể ngồi chơi trong lúc công cụ được treo sau nền và lần lượt đăng sản phẩm cho từng học sinh.
 
+Thầy cô cũng có thể làm theo hướng dẫn trong video này: https://youtu.be/RPpFOXqI-98
+
 ## Lưu ý
 Công cụ hiện đang trong giai đoạn beta, có nhiều lỗi phát sinh mà em chưa nắm hết được. Nếu thầy cô gặp lỗi hay có gì cần góp ý, xin thầy cô hãy đóng góp bên dưới form giúp em ạ, em xin cảm ơn.
 

@@ -36,7 +36,8 @@ def logout():
         profile_info_click = driver.find_element(By.XPATH, "//*[@id='header']/div[2]/div[2]/div/div[1]/div/figure/a").click()
         logout_click = driver.find_element(By.XPATH, "//*[@id='header']/div[2]/div[2]/div/div[2]/ul[2]/li[5]/a").click()
     except:
-        print("User haven't logged in yet")
+        # print("User haven't logged in yet")
+        pass
 
 def go_home_screen():
     time.sleep(1)
@@ -55,9 +56,10 @@ def go_login_page():
         )
         new_account_button = driver.find_element(By.XPATH, "//a[.//text()[contains(normalize-space(), 'Sử dụng tài khoản khác')]]")
         new_account_button.click()
-        print("Clicked 'Choose other account' button")
+        # print("Clicked 'Choose other account' button")
     except:
-        print("Didn't find 'Choose other account' button")
+        # print("Didn't find 'Choose other account' button")
+        pass
 
 # From home screen to Log in
 def login(username, password):
@@ -98,8 +100,8 @@ def choose_lesson(level, lesson_num):
 # Fill project info and upload, currently at lesson page
 def upload_project(image_name):
     if uploaded_project():
-        print("Project uploaded")
-        return "project_uploaded"
+        # print("Project uploaded")
+        return "project_already_uploaded"
     
     # Go to project session
     upload_project_session = WebDriverWait(driver, 15).until( 
@@ -112,10 +114,10 @@ def upload_project(image_name):
         EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div[3]/div[2]/div/div[1]/div[1]/div/div[2]/b/span[2]"))
     ).text
     description_text = driver.find_element(By.XPATH, "/html/body/div[1]/div/div[3]/div[2]/div/div[1]/div[1]/div/div[2]/ul/div/p[2]").text
-    print(f"Before: {description_text}")
+    # print(f"Before: {description_text}")
     while len(description_text) <= 50: # description must have more than 50 char
         description_text = description_text + "\r" + description_text
-    print(f"After: {description_text}")
+    # print(f"After: {description_text}")
 
     title_element = driver.find_element(By.XPATH, "//*[@id='js-countformtext']")
     title_element.send_keys(title_text)
@@ -137,7 +139,7 @@ def upload_project(image_name):
     
 def main_upload():
     print("\nBắt đầu đăng sản phẩm học sinh...")
-    for student_data in data[::-1]:
+    for student_data in data:
         print(f"Đăng sản phẩm cho học sinh {student_data['student_name']}, môn học {student_data['course']}, học phần {student_data['level']}, bài {student_data['lesson_num']}")
         go_home_screen()
         logout()
@@ -146,7 +148,16 @@ def main_upload():
         choose_student(student_data['student_name'])
         choose_course(student_data['course'])
         choose_lesson(student_data['level'], student_data['lesson_num'])
-        upload_project(student_data['image_name'])
+        result = upload_project(student_data['image_name'])
+        if result == "project_already_uploaded":
+            print("Sản phẩm đã được đăng rồi. ",end="")
+        elif result == "done":
+            print("Đăng sản phẩm thành công! ",end="")
+            
+        if student_data != data[-1]:
+            print("Bắt đầu đăng sản phẩm tiếp theo...\n")
+        else:
+            print("\nĐã đăng xong sản phẩm cho tất cả học sinh! Trang web sẽ được treo trong vòng 10 phút trước khi tự tắt.")
     
         
 def tutorial():
@@ -165,7 +176,7 @@ def tutorial():
 def main():
     tutorial()
     main_upload()
-    time.sleep(200)
+    time.sleep(600)
     driver.quit()
 
 if __name__ == "__main__":
