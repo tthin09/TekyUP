@@ -63,39 +63,51 @@ def go_login_page():
 
 # From home screen to Log in
 def login(username, password):
-    username_element = WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located((By.ID, "user_username"))
-    )
-    username_element.send_keys(username)
+    try:
+        username_element = WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.ID, "user_username"))
+        )
+        username_element.send_keys(username)
 
-    password_element = driver.find_element(By.ID, "user_password")
-    password_element.send_keys(password)
+        password_element = driver.find_element(By.ID, "user_password")
+        password_element.send_keys(password)
 
-    login_button = driver.find_element(By.XPATH, """//*[@id="devise_sign_in_form"]/input[2]""")
-    login_button.click()
+        login_button = driver.find_element(By.XPATH, """//*[@id="devise_sign_in_form"]/input[2]""")
+        login_button.click()
+    except Exception as e:
+        print(f"[{current_student_name}] Login failed. An unexpected error occurred: {e}")
 
 # Choose student after login
 def choose_student(student_name):
-    parent_button = driver.find_element(By.XPATH, f"//div[@class='groupItems b-student__item'][.//h3[normalize-space()='{student_name}']]/div/div/div/div[3]")
-    select_student_button = parent_button.find_element(By.TAG_NAME, "svg")
-    select_student_button.click()
-    continue_sign_in = driver.find_element(By.ID, "btn-submit-choose-student")
-    continue_sign_in.click()
+    try:
+        parent_button = driver.find_element(By.XPATH, f"//div[@class='groupItems b-student__item'][.//h3[normalize-space()='{student_name}']]/div/div/div/div[3]")
+        select_student_button = parent_button.find_element(By.TAG_NAME, "svg")
+        select_student_button.click()
+        continue_sign_in = driver.find_element(By.ID, "btn-submit-choose-student")
+        continue_sign_in.click()
+    except Exception as e:
+        print(f"[{current_student_name}] Choose student failed. An unexpected error occurred: {e}")
 
 # Choose course, currently at home page
 def choose_course(course_name):
-    course_button = WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located((By.XPATH, f"//div[@class='c-content-myclass__detail' and @data-course='{course_name}']"))
-    )
-    course_button.click()
+    try:
+        course_button = WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, f"//div[@class='c-content-myclass__detail' and @data-course='{course_name}']"))
+        )
+        course_button.click()
+    except Exception as e:
+        print(f"[{current_student_name}] Choose course failed. An unexpected error occurred: {e}")
 
 # Choose lesson, currently at course page
 def choose_lesson(level, lesson_num):
-    lesson_num = int(lesson_num)
-    level_div = WebDriverWait(driver, 15).until(
-        EC.presence_of_element_located((By.XPATH, f"//div[contains(@class, 'c-timeline-lesson__item')][.//span[normalize-space()='Học phần {level}']]/div[2]/ul/li[{lesson_num}]/div/a"))
-    )
-    level_div.click()
+    try:
+        lesson_num = int(lesson_num)
+        level_div = WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.XPATH, f"//div[contains(@class, 'c-timeline-lesson__item')][.//span[normalize-space()='Học phần {level}']]/div[2]/ul/li[{lesson_num}]/div/a"))
+        )
+        level_div.click()
+    except Exception as e:
+        print(f"[{current_student_name}] Choose lesson failed. An unexpected error occurred: {e}")
 
 # Fill project info and upload, currently at lesson page
 def upload_project(image_name):
@@ -103,43 +115,50 @@ def upload_project(image_name):
         # print("Project uploaded")
         return "project_already_uploaded"
     
-    # Go to project session
-    upload_project_session = WebDriverWait(driver, 15).until( 
-        EC.presence_of_element_located((By.XPATH, "//*[@id='sesison_projects_link_tab']"))
-    )
-    upload_project_session.click()
+    try:
+        # Go to project session
+        upload_project_session = WebDriverWait(driver, 15).until( 
+            EC.presence_of_element_located((By.XPATH, "//*[@id='sesison_projects_link_tab']"))
+        )
+        upload_project_session.click()
 
-    # Fill title and description
-    title_text = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div[3]/div[2]/div/div[1]/div[1]/div/div[2]/b/span[2]"))
-    ).text
-    description_text = driver.find_element(By.XPATH, "/html/body/div[1]/div/div[3]/div[2]/div/div[1]/div[1]/div/div[2]/ul/div/p[2]").text
-    # print(f"Before: {description_text}")
-    while len(description_text) <= 50: # description must have more than 50 char
-        description_text = description_text + "\r" + description_text
-    # print(f"After: {description_text}")
+        # Fill title and description
+        title_text = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div/div[3]/div[2]/div/div[1]/div[1]/div/div[2]/b/span[2]"))
+        ).text
+        description_text = driver.find_element(By.XPATH, "/html/body/div[1]/div/div[3]/div[2]/div/div[1]/div[1]/div/div[2]/ul/div/p[2]").text
+        # print(f"Before: {description_text}")
+        while len(description_text) <= 50: # description must have more than 50 char
+            description_text = description_text + "\r" + description_text
+        # print(f"After: {description_text}")
 
-    title_element = driver.find_element(By.XPATH, "//*[@id='js-countformtext']")
-    title_element.send_keys(title_text)
-    description_element = driver.find_element(By.XPATH, "//*[@id='form_upload_project']/div[3]/trix-editor")
-    description_element.send_keys(description_text)
+        title_element = driver.find_element(By.XPATH, "//*[@id='js-countformtext']")
+        title_element.send_keys(title_text)
+        description_element = driver.find_element(By.XPATH, "//*[@id='form_upload_project']/div[3]/trix-editor")
+        description_element.send_keys(description_text)
 
-    image_rel_path = "images/" + image_name
-    image_abs_path = os.path.abspath(image_rel_path)
-    image_element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//*[@id='form_upload_project']/div[4]/a/input"))
-    )
-    image_element.send_keys(image_abs_path)
+        image_rel_path = "images/" + image_name
+        image_abs_path = os.path.abspath(image_rel_path)
+        image_element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//*[@id='form_upload_project']/div[4]/a/input"))
+        )
+        image_element.send_keys(image_abs_path)
+        
+        # click upload
+        upload_button = driver.find_element(By.XPATH, "//*[@id='button_create_project_form']")
+        upload_button.click()
+        
+        return "done"
+    except Exception as e:
+        print(f"[{current_student_name}] Choose lesson failed. An unexpected error occurred: {e}")
+
     
-    # click upload
-    upload_button = driver.find_element(By.XPATH, "//*[@id='button_create_project_form']")
-    upload_button.click()
-    
-    return "done"
-    
+current_student_name = ""
 def main_upload():
+    global current_student_name
     print("\nBắt đầu đăng sản phẩm học sinh...")
     for student_data in data:
+        current_student_name = student_data["student_name"]
         print(f"Đăng sản phẩm cho học sinh {student_data['student_name']}, môn học {student_data['course']}, học phần {student_data['level']}, bài {student_data['lesson_num']}")
         go_home_screen()
         logout()
